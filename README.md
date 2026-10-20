@@ -10,6 +10,8 @@ Using ESP32-C3 with ESPHome fimware
 
 [ADC battery voltage measurement](./yaml/ADC%20battery%20voltage%20measurement)
 
+```yaml
+
 ADC battery voltage measurement
 - platform: adc
   pin: GPIO4
