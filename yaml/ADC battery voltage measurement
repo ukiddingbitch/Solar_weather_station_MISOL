@@ -1,0 +1,29 @@
+- platform: adc
+    pin: GPIO4
+    id: battery_adc
+    name: "Battery ADC"
+    attenuation: 2.5db
+    update_interval: 1s
+    unit_of_measurement: "V"
+    accuracy_decimals: 3
+    samples: 32
+    sampling_mode: avg
+
+  - platform: template
+    id: battery_voltage
+    name: "Battery Voltage"
+    unit_of_measurement: "V"
+    accuracy_decimals: 2
+    update_interval: 1s
+    lambda: |-
+      float adc = id(battery_adc).state;
+
+      if (isnan(adc))
+        return NAN;
+
+      return adc * 11.35f;
+    filters:
+      - sliding_window_moving_average:
+          window_size: 10
+          send_every: 1
+          send_first_at: 1
