@@ -2,7 +2,7 @@
 Using ESP32-C3 with ESPHome fimware
 # Weather station unpacking
 
-![Weather station](Screenshot_20261019-103347_Gallery.png)
+![Screenshot_20261019-103347_Gallery.png](./Unpacked/Screenshot_20261019-103347_Gallery.png)
 
 ### ESPHome full YAML configuration here:
 
