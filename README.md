@@ -1,6 +1,5 @@
 # Solar weather station MISOL
 Using ESP32-C3 with ESPHome fimware
-# Weather station unpacking
 
 ![First look weather station](https://raw.githubusercontent.com/ukiddingbitch/Solar_weather_station_MISOL/main/Images/First%20look%20weather%20station.jpg)
 
@@ -41,7 +40,7 @@ GPIO4 was used for ADC battery voltage measurement
         send_every: 1
         send_first_at: 1
 ```
-U will have to measure battery voltage and change multiplier if this one will not work:
+Battery voltage measurement have to be done then change multiplier if this one will not work:
 ```yaml
 return adc * 11.35f;
 ```
