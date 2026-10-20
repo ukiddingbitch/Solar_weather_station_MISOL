@@ -5,4 +5,4 @@ Using ESP32-C3 with ESPHome fimware
 ![Weather station](Screenshot_20261019-103347_Gallery.png)
 ESPHome full YAML configuration here:
 
-![yaml](Weather station yaml for ESPHome.txt).
+
