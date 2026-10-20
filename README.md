@@ -27,18 +27,30 @@ A solar-powered outdoor weather station based on an ESP32-C3, ESPHome and Home A
 
 ### Hardware
 
-Component| Description
-Microcontroller| ESP32-C3 DevKitM-1
-Weather station| MISOL WH-SP-WS02
-Temperature and humidity sensor| HTU21D
-Atmospheric pressure sensor| BMP390
-Light sensor| BH1750
-Wind speed sensor| Anemometer
-Wind direction sensor| Analog wind direction sensor
-Rain sensor| Tipping-bucket rain gauge
-Power supply| Solar panel, Li-ion battery and charging circuit
-Firmware| ESPHome with ESP-IDF
-Smart home platform| Home Assistant
+Component
+Description
+Microcontroller
+ESP32-C3 DevKitM-1
+Weather station
+MISOL WH-SP-WS02
+Temperature and humidity sensor
+HTU21D
+Atmospheric pressure sensor
+BMP390
+Light sensor
+BH1750
+Wind speed sensor
+Anemometer
+Wind direction sensor
+Analog wind direction sensor
+Rain sensor
+Tipping-bucket rain gauge
+Power supply
+Solar panel, Li-ion battery and charging circuit
+Firmware
+ESPHome with ESP-IDF
+Smart home platform
+Home Assistant
 
 Note: Verify the actual components and wiring of your hardware revision before using the configuration.
 
