@@ -49,10 +49,6 @@ A solar-powered outdoor weather station based on an ESP32-C3, ESPHome and Home A
 
 ### ESPHome Configuration
 
-The complete configuration is available here:
-
-"Weather station YAML configuration" (yaml/Weather%20station%20yaml%20for%20ESPHome.txt)
-
 The following sections explain selected parts of the configuration and the calibration values that may need adjustment.
 
 ### 1. Battery Voltage Measurement
