@@ -26,7 +26,7 @@ A solar-powered outdoor weather station based on an ESP32-C3, ESPHome and Home A
 - Solar-powered operation
 
 
-## Hardware
+## Hardware/Software
 
 | Component | Description |
 | --- | --- |
@@ -39,13 +39,13 @@ A solar-powered outdoor weather station based on an ESP32-C3, ESPHome and Home A
 | Wind direction sensor | Analog wind direction sensor |
 | Rain gauge | Tipping-bucket rain gauge |
 | Solar panel | Solar power supply |
-| Battery | Li-ion 18650 |
+| Battery | 2x parallel Li-ion 18650 |
 | Charging module | CN3158 |
 | Voltage converter | MT3608 |
 | Firmware | ESPHome |
 | Smart home platform | Home Assistant |
 
-Note: Verify the actual components and wiring of your hardware revision before using the configuration.
+**Note:** Verify the actual components and wiring of your hardware revision before using the configuration.
 
 ### ESPHome Configuration
 
@@ -81,7 +81,7 @@ The battery voltage is measured using the ESP32-C3 ADC and a voltage divider.
     lambda: |-
       return id(battery_adc).state * 11.35f;
 ```
-Calibration warning: The multiplier "11.35" depends on the actual voltage divider and ADC readings. Calibrate it by comparing the reported voltage with a multimeter connected to the battery. Ensure that the voltage at the ADC input never exceeds the permitted input range.
+**Calibration warning!:** The multiplier "11.35" depends on the actual voltage divider and ADC readings. Calibrate it by comparing the reported voltage with a multimeter connected to the battery. Ensure that the voltage at the ADC input never exceeds the permitted input range.
 
 ### 2. Wind Direction
 
@@ -111,7 +111,7 @@ South-West| 0.606 V
 West| 0.935 V
 North-West| 2.050 V
 ```
-Calibration warning: These values are specific to the sensor and circuit used in this build. Measure the actual output voltages and adjust the thresholds in the full YAML configuration if necessary.
+**Calibration warning:** These values are specific to the sensor and circuit used in this build. Measure the actual output voltages and adjust the thresholds in the full YAML configuration if necessary.
 
 ### 3. Wind Speed
 
@@ -128,11 +128,11 @@ Wind speed is calculated by counting anemometer pulses. The configuration calcul
       return id(wind_speed_kmh_value);
 ```
 The conversion used in the configuration is:
-
+```yaml
 wind_speed_kmh = pulses_per_second * 2.4f;
 wind_speed_ms = wind_speed_kmh / 3.6f;
-
-Calibration warning: The conversion factor "2.4" must match the characteristics of the anemometer. Compare the readings with a reference instrument or a known calibration method before relying on the measurements.
+```
+**Calibration warning:** The conversion factor "2.4" must match the characteristics of the anemometer. Compare the readings with a reference instrument or a known calibration method before relying on the measurements.
 
 ### 4. Rainfall Measurement
 
@@ -143,7 +143,7 @@ id(rain_count_today) += 0.2794f;
 ```
 The configuration calculates accumulated rainfall, daily rainfall, recent rainfall and precipitation rate.
 
-Calibration warning: The value "0.2794 mm" per pulse must match the rain gauge calibration. The rainfall counters are held in runtime globals in this implementation, so accumulated values may be lost after a restart unless persistence is explicitly configured. Daily reset also depends on a valid time source.
+**Calibration warning:** The value "0.2794 mm" per pulse must match the rain gauge calibration. The rainfall counters are held in runtime globals in this implementation, so accumulated values may be lost after a restart unless persistence is explicitly configured. Daily reset also depends on a valid time source.
 
 ### 5. I²C Sensors
 
@@ -154,13 +154,13 @@ i2c:
   scl: GPIO9
   scan: true
 ```
-- HTU21D: Temperature and relative humidity
-- BMP390: Atmospheric pressure and temperature
-- BH1750: Ambient illuminance
+- **HTU21D:** Temperature and relative humidity
+- **BMP390:** Atmospheric pressure and temperature
+- **BH1750:** Ambient illuminance
 
 The full configuration defines the individual sensor platforms and their update intervals.
 
-Hardware warning: Confirm the I²C addresses, supply voltage and wiring for the specific sensor modules being used.
+**Hardware warning:** Confirm the I²C addresses, supply voltage and wiring for the specific sensor modules being used.
 
 ### 6. Illuminance Measurement
 
@@ -183,7 +183,7 @@ wifi:
 ```
 The full YAML also contains an automation that monitors connectivity and temporarily disables and re-enables Wi-Fi after repeated failed checks.
 
-Warning: Disabling the automatic reboot timeout means that Wi-Fi disconnection alone will not trigger the usual ESPHome reboot behavior. Test the recovery automation under real network failure conditions.
+**Warning:** Disabling the automatic reboot timeout means that Wi-Fi disconnection alone will not trigger the usual ESPHome reboot behavior. Test the recovery automation under real network failure conditions.
 
 ### 8. Home Assistant Integration
 
@@ -193,24 +193,31 @@ The configuration also includes OTA updates and a fallback access point for reco
 
 Keep API encryption keys, Wi-Fi credentials and OTA passwords private. Store secrets in a separate "secrets.yaml" file when appropriate, and never publish real credentials in a public repository.
 
-### 9. GPIO Pinout
+## GPIO Pinout
 
-ESP32-C3 GPIO| Function
-GPIO3| Wind direction ADC
-GPIO4| Battery voltage ADC
-GPIO5| Rain gauge input
-GPIO6| Anemometer input
-GPIO8| I²C SDA
-GPIO9| I²C SCL
+| ESP32-C3 GPIO | Function |
+| --- | --- |
+| GPIO3 | Wind direction ADC |
+| GPIO4 | Battery voltage ADC |
+| GPIO5 | Rain gauge input |
+| GPIO6 | Anemometer input |
+| GPIO8 | I²C SDA |
+| GPIO9 | I²C SCL |
 
 Check the complete YAML and the wiring of your particular board before connecting hardware. Avoid assigning the same GPIO to incompatible functions.
 
 ### 10. Limitations and Notes
 
 - Sensor accuracy depends on calibration, component tolerances and installation.
+  
 - Wind readings depend on the anemometer's pulse characteristics and exposure to the wind.
+  
 - Rainfall accuracy depends on the tipping-bucket calibration and pulse detection.
+  
 - Battery voltage readings depend on the voltage divider and ADC calibration.
+  
 - Solar charging performance depends on panel output, battery capacity, charging electronics and weather conditions.
+  
 - Wi-Fi availability and Home Assistant connectivity depend on the local network.
+  
 - Runtime counters may reset when the device restarts unless persistence is implemented.
