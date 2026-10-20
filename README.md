@@ -13,7 +13,7 @@ Solar Weather Station MISOL
 
 A solar-powered outdoor weather station based on an ESP32-C3, ESPHome and Home Assistant. The station measures temperature, humidity, atmospheric pressure, illuminance, wind speed, wind direction and rainfall.
 
-Features
+### Features
 
 - Outdoor temperature and relative humidity measurement
 - Atmospheric pressure measurement
@@ -25,7 +25,7 @@ Features
 - Home Assistant integration through the native ESPHome API
 - Solar-powered operation
 
-Hardware
+### Hardware
 
 Component| Description
 Microcontroller| ESP32-C3 DevKitM-1
@@ -42,7 +42,7 @@ Smart home platform| Home Assistant
 
 Note: Verify the actual components and wiring of your hardware revision before using the configuration.
 
-ESPHome Configuration
+### ESPHome Configuration
 
 The complete configuration is available here:
 
@@ -50,7 +50,7 @@ The complete configuration is available here:
 
 The following sections explain selected parts of the configuration and the calibration values that may need adjustment.
 
-1. Battery Voltage Measurement
+### 1. Battery Voltage Measurement
 
 The battery voltage is measured using the ESP32-C3 ADC and a voltage divider.
 ```yaml
@@ -78,7 +78,7 @@ The battery voltage is measured using the ESP32-C3 ADC and a voltage divider.
 ```
 Calibration warning: The multiplier "11.35" depends on the actual voltage divider and ADC readings. Calibrate it by comparing the reported voltage with a multimeter connected to the battery. Ensure that the voltage at the ADC input never exceeds the permitted input range.
 
-2. Wind Direction
+### 2. Wind Direction
 
 Wind direction is measured using an analog input on GPIO3. The measured voltage is compared with calibrated voltage ranges to determine the compass direction.
 ```yaml
@@ -108,7 +108,7 @@ North-West| 2.050 V
 ```
 Calibration warning: These values are specific to the sensor and circuit used in this build. Measure the actual output voltages and adjust the thresholds in the full YAML configuration if necessary.
 
-3. Wind Speed
+### 3. Wind Speed
 
 Wind speed is calculated by counting anemometer pulses. The configuration calculates speed in metres per second and kilometres per hour and uses a rolling history of measurements.
 ```yaml
@@ -129,7 +129,7 @@ wind_speed_ms = wind_speed_kmh / 3.6f;
 
 Calibration warning: The conversion factor "2.4" must match the characteristics of the anemometer. Compare the readings with a reference instrument or a known calibration method before relying on the measurements.
 
-4. Rainfall Measurement
+### 4. Rainfall Measurement
 
 Rainfall is measured using a tipping-bucket rain gauge. Each detected pulse increases the accumulated rainfall.
 ```yaml
@@ -140,7 +140,7 @@ The configuration calculates accumulated rainfall, daily rainfall, recent rainfa
 
 Calibration warning: The value "0.2794 mm" per pulse must match the rain gauge calibration. The rainfall counters are held in runtime globals in this implementation, so accumulated values may be lost after a restart unless persistence is explicitly configured. Daily reset also depends on a valid time source.
 
-5. I²C Sensors
+### 5. I²C Sensors
 
 The I²C bus connects the BMP390, HTU21D and BH1750 sensors.
 ```yaml
@@ -157,7 +157,7 @@ The full configuration defines the individual sensor platforms and their update 
 
 Hardware warning: Confirm the I²C addresses, supply voltage and wiring for the specific sensor modules being used.
 
-6. Illuminance Measurement
+### 6. Illuminance Measurement
 
 The BH1750 measures ambient illuminance in lux.
 ```yaml
@@ -168,7 +168,7 @@ The BH1750 measures ambient illuminance in lux.
 ```
 The address shown is a common BH1750 address. Use the address detected by your actual hardware if it differs.
 
-7. Wi-Fi Reliability
+### 7. Wi-Fi Reliability
 
 The station includes a recovery mechanism intended to restore connectivity after repeated Wi-Fi failures.
 ```yaml
@@ -180,7 +180,7 @@ The full YAML also contains an automation that monitors connectivity and tempora
 
 Warning: Disabling the automatic reboot timeout means that Wi-Fi disconnection alone will not trigger the usual ESPHome reboot behavior. Test the recovery automation under real network failure conditions.
 
-8. Home Assistant Integration
+### 8. Home Assistant Integration
 
 The station uses the native ESPHome API to expose its sensor readings to Home Assistant.
 
@@ -200,7 +200,7 @@ GPIO9| I²C SCL
 
 Check the complete YAML and the wiring of your particular board before connecting hardware. Avoid assigning the same GPIO to incompatible functions.
 
-10. Limitations and Notes
+### 10. Limitations and Notes
 
 - Sensor accuracy depends on calibration, component tolerances and installation.
 - Wind readings depend on the anemometer's pulse characteristics and exposure to the wind.
