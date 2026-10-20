@@ -1,5 +1,5 @@
 esphome:
-  name: meteostanica-test
+  name: weatherstation-test
   friendly_name: Weather Station Test
 
 esp32:
