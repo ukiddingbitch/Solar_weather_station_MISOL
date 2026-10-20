@@ -8,11 +8,9 @@ Using ESP32-C3 with ESPHome fimware
 
 [Weather station yaml for ESPHome.txt](./yaml/Weather%20station%20yaml%20for%20ESPHome.txt)
 
-[ADC battery voltage measurement](./yaml/ADC%20battery%20voltage%20measurement)
+GPIO4 was used for ADC battery voltage measurement
 
 ```yaml
-
-ADC battery voltage measurement
 - platform: adc
   pin: GPIO4
   id: battery_adc
@@ -42,3 +40,8 @@ ADC battery voltage measurement
         window_size: 10
         send_every: 1
         send_first_at: 1
+```
+U will have to measure battery voltage and change multiplier if this one will not work:
+```yaml
+return adc * 11.35f;
+```
