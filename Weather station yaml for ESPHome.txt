@@ -1,0 +1,578 @@
+esphome:
+  name: meteostanica-test
+  friendly_name: Weather Station Test
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: esp-idf
+
+logger:
+  level: DEBUG
+
+time:
+  - platform: sntp
+    id: local_time
+    timezone: Europe/Bratislava
+
+globals:
+  - id: rain_count
+    type: int
+    restore_value: no
+    initial_value: '0'
+
+  - id: rain_count_today
+    type: int
+    restore_value: no
+    initial_value: '0'
+
+  - id: last_rain_time
+    type: uint32_t
+    restore_value: no
+    initial_value: '0'
+
+  - id: wind_count
+    type: int
+    restore_value: no
+    initial_value: '0'
+
+  - id: wind_speed_ms_value
+    type: float
+    restore_value: no
+    initial_value: '0.0'
+
+  - id: wind_speed_kmh_value
+    type: float
+    restore_value: no
+    initial_value: '0.0'
+
+  - id: wind_pulses_last_second
+    type: int
+    restore_value: no
+    initial_value: '0'
+
+  - id: wifi_failed_checks
+    type: int
+    restore_value: no
+    initial_value: '0'
+
+i2c:
+  - id: i2c_1
+    sda: GPIO8
+    scl: GPIO9
+    scan: true
+    frequency: 100kHz
+
+sensor:
+
+  - platform: adc
+    pin: GPIO4
+    id: battery_adc
+    name: "Battery ADC"
+    attenuation: 2.5db
+    update_interval: 1s
+    unit_of_measurement: "V"
+    accuracy_decimals: 3
+    samples: 32
+    sampling_mode: avg
+
+  - platform: template
+    id: battery_voltage
+    name: "Battery Voltage"
+    unit_of_measurement: "V"
+    accuracy_decimals: 2
+    update_interval: 1s
+    lambda: |-
+      float adc = id(battery_adc).state;
+
+      if (isnan(adc))
+        return NAN;
+
+      return adc * 11.35f;
+    filters:
+      - sliding_window_moving_average:
+          window_size: 10
+          send_every: 1
+          send_first_at: 1
+
+  - platform: adc
+    pin: GPIO3
+    id: wind_direction_adc
+    name: "Wind Direction Voltage"
+    attenuation: 11db
+    update_interval: 500ms
+    unit_of_measurement: "V"
+    accuracy_decimals: 3
+    samples: 5
+    filters:
+      - sliding_window_moving_average:
+          window_size: 5
+          send_every: 1
+
+  - platform: template
+    id: wind_direction
+    name: "Wind Direction"
+    unit_of_measurement: "°"
+    accuracy_decimals: 0
+    update_interval: 500ms
+    lambda: |-
+      float v = id(wind_direction_adc).state;
+
+      if (fabs(v - 2.984) < 0.18)
+        return 0;
+
+      if (fabs(v - 2.920) < 0.18)
+        return 45;
+
+      if (fabs(v - 2.559) < 0.18)
+        return 90;
+
+      if (fabs(v - 1.510) < 0.18)
+        return 135;
+
+      if (fabs(v - 0.303) < 0.18)
+        return 180;
+
+      if (fabs(v - 0.606) < 0.18)
+        return 225;
+
+      if (fabs(v - 0.935) < 0.18)
+        return 270;
+
+      if (fabs(v - 2.050) < 0.18)
+        return 315;
+
+      return NAN;
+
+  - platform: template
+    id: wind_speed
+    name: "Wind Speed"
+    unit_of_measurement: "m/s"
+    device_class: wind_speed
+    state_class: measurement
+    accuracy_decimals: 2
+    update_interval: 1s
+    lambda: |-
+      return id(wind_speed_ms_value);
+
+  - platform: template
+    id: wind_speed_kmh
+    name: "Wind Speed km/h"
+    unit_of_measurement: "km/h"
+    device_class: wind_speed
+    state_class: measurement
+    accuracy_decimals: 1
+    update_interval: 1s
+    lambda: |-
+      return id(wind_speed_kmh_value);
+
+  - platform: template
+    id: rain_total
+    name: "Total Precipitation"
+    icon: "mdi:weather-rainy"
+    device_class: precipitation
+    state_class: total_increasing
+    unit_of_measurement: "mm"
+    accuracy_decimals: 2
+    update_interval: 1s
+    lambda: |-
+      return id(rain_count) * 0.2794;
+
+  - platform: template
+    id: rain_today
+    name: "Precipitation Today"
+    icon: "mdi:weather-rainy"
+    device_class: precipitation
+    state_class: total
+    unit_of_measurement: "mm"
+    accuracy_decimals: 2
+    update_interval: 1s
+    lambda: |-
+      return id(rain_count_today) * 0.2794;
+
+  - platform: template
+    id: rain_last_minute
+    name: "Precipitation Last Minute"
+    icon: "mdi:weather-rainy"
+    device_class: precipitation
+    unit_of_measurement: "mm"
+    accuracy_decimals: 2
+    update_interval: 60s
+    lambda: |-
+      static int previous_count = 0;
+
+      int current = id(rain_count);
+      int pulses = current - previous_count;
+
+      previous_count = current;
+
+      if (pulses < 0)
+        pulses = 0;
+
+      return pulses * 0.2794;
+
+  - platform: template
+    id: rain_rate
+    name: "Precipitation Rate"
+    icon: "mdi:weather-pouring"
+    device_class: precipitation_intensity
+    unit_of_measurement: "mm/h"
+    accuracy_decimals: 2
+    update_interval: 60s
+    lambda: |-
+      static int previous_count = 0;
+
+      int current = id(rain_count);
+      int pulses = current - previous_count;
+
+      previous_count = current;
+
+      if (pulses < 0)
+        pulses = 0;
+
+      return pulses * 0.2794 * 60.0;
+
+  - platform: template
+    id: wind_pulses
+    name: "Wind Pulses"
+    icon: "mdi:weather-windy"
+    unit_of_measurement: "imp/s"
+    accuracy_decimals: 0
+    update_interval: 1s
+    lambda: |-
+      return id(wind_pulses_last_second);
+
+  - platform: template
+    id: rain_pulses
+    name: "Rain Gauge Pulses"
+    icon: "mdi:weather-rainy"
+    unit_of_measurement: "imp/min"
+    accuracy_decimals: 0
+    update_interval: 60s
+    lambda: |-
+      static int previous_count = 0;
+
+      int current = id(rain_count);
+      int pulses = current - previous_count;
+
+      previous_count = current;
+
+      if (pulses < 0)
+        pulses = 0;
+
+      return pulses;
+
+  - platform: bmp3xx_i2c
+    i2c_id: i2c_1
+    id: bmp390
+    pressure:
+      id: bmp390_pressure
+      name: "Pressure"
+      unit_of_measurement: "hPa"
+      accuracy_decimals: 1
+      oversampling: 16x
+    temperature:
+      id: bmp390_temperature
+      name: "BMP390 Temperature"
+      unit_of_measurement: "°C"
+      accuracy_decimals: 1
+    update_interval: 10s
+
+  - platform: htu21d
+    i2c_id: i2c_1
+    temperature:
+      id: htu21d_temperature
+      name: "HTU21D Temperature"
+      accuracy_decimals: 1
+    humidity:
+      id: htu21d_humidity
+      name: "Humidity"
+      accuracy_decimals: 1
+    update_interval: 10s
+
+  - platform: bh1750
+    i2c_id: i2c_1
+    name: "Outdoor Illuminance"
+    id: bh1750_lux
+    unit_of_measurement: "lx"
+    accuracy_decimals: 0
+    update_interval: 10s
+
+text_sensor:
+
+  - platform: template
+    id: wind_direction_text
+    name: "Wind Direction text"
+    update_interval: 500ms
+    lambda: |-
+      float direction = id(wind_direction).state;
+
+      if (isnan(direction))
+        return {"Unknown"};
+
+      if (direction == 0)
+        return {"North"};
+
+      if (direction == 45)
+        return {"Northeast"};
+
+      if (direction == 90)
+        return {"East"};
+
+      if (direction == 135)
+        return {"Southeast"};
+
+      if (direction == 180)
+        return {"South"};
+
+      if (direction == 225)
+        return {"Southwest"};
+
+      if (direction == 270)
+        return {"West"};
+
+      if (direction == 315)
+        return {"Northwest"};
+
+      return {"Unknown"};
+
+  - platform: template
+    id: rain_status
+    name: "Rain Status"
+    icon: "mdi:weather-rainy"
+    update_interval: 1s
+    lambda: |-
+      if (id(last_rain_time) == 0)
+        return {"Not Raining"};
+
+      uint32_t elapsed = millis() - id(last_rain_time);
+
+      if (elapsed < 180000)
+        return {"Raining"};
+
+      return {"Not Raining"};
+
+binary_sensor:
+
+  - platform: gpio
+    id: anemometer_input
+    name: "Anemometer Input"
+    internal: true
+    pin:
+      number: GPIO6
+      mode:
+        input: true
+        pullup: true
+      inverted: true
+    filters:
+      - delayed_on: 5ms
+      - delayed_off: 5ms
+    on_press:
+      then:
+        - lambda: |-
+            id(wind_count)++;
+
+  - platform: gpio
+    id: rain_input
+    name: "Rain Gauge Input"
+    internal: true
+    pin:
+      number: GPIO5
+      mode:
+        input: true
+        pullup: true
+      inverted: true
+    filters:
+      - delayed_on: 10ms
+      - delayed_off: 10ms
+    on_press:
+      then:
+        - lambda: |-
+            id(rain_count)++;
+            id(rain_count_today)++;
+            id(last_rain_time) = millis();
+
+  - platform: template
+    id: raining_now
+    name: "Raining Now"
+    icon: "mdi:weather-rainy"
+    device_class: moisture
+    lambda: |-
+      if (id(last_rain_time) == 0)
+        return false;
+
+      uint32_t elapsed = millis() - id(last_rain_time);
+
+      return elapsed < 180000;
+
+interval:
+
+  - interval: 1s
+    then:
+      - lambda: |-
+          static int previous_wind_count = 0;
+
+          static int pulse_history[10] =
+            {0,0,0,0,0,0,0,0,0,0};
+
+          static int history_index = 0;
+          static int history_total = 0;
+          static int history_samples = 0;
+
+          int current = id(wind_count);
+
+          int pulses = current - previous_wind_count;
+
+          previous_wind_count = current;
+
+          if (pulses < 0)
+            pulses = 0;
+
+          history_total -= pulse_history[history_index];
+
+          pulse_history[history_index] = pulses;
+
+          history_total += pulses;
+
+          history_index++;
+
+          if (history_index >= 10)
+            history_index = 0;
+
+          if (history_samples < 10)
+            history_samples++;
+
+          id(wind_pulses_last_second) = pulses;
+
+          float pulses_per_second =
+            (float) history_total / (float) history_samples;
+
+          float kmh = pulses_per_second * 2.4f;
+          float ms = kmh / 3.6f;
+
+          id(wind_speed_kmh_value) = kmh;
+          id(wind_speed_ms_value) = ms;
+
+  - interval: 10s
+    then:
+      - lambda: |-
+          auto time = id(local_time).now();
+
+          if (!time.is_valid())
+            return;
+
+          static int previous_day = -1;
+
+          int current_day = time.day_of_year;
+
+          if (previous_day == -1)
+          {
+            previous_day = current_day;
+            return;
+          }
+
+          if (current_day != previous_day)
+          {
+            id(rain_count_today) = 0;
+            previous_day = current_day;
+          }
+
+  - interval: 1s
+    then:
+      - logger.log:
+          format: >-
+            DIRECTION: %.0f° |
+            DIRECTION TEXT: %s |
+            WIND: %.2f m/s |
+            WIND: %.1f km/h |
+            PULSES: %.0f imp/s |
+            PRECIPITATION TODAY: %.2f mm |
+            RAINING: %s |
+            PRESSURE: %.1f hPa |
+            TEMPERATURE: %.1f °C |
+            HUMIDITY: %.1f %% |
+            ILLUMINANCE: %.0f lx |
+            BATTERY ADC: %.3f V |
+            BATTERY: %.2f V
+          args:
+            - "id(wind_direction).state"
+            - "id(wind_direction_text).state.c_str()"
+            - "id(wind_speed_ms_value)"
+            - "id(wind_speed_kmh_value)"
+            - "(float) id(wind_pulses_last_second)"
+            - "id(rain_today).state"
+            - "(id(last_rain_time) != 0 && (millis() - id(last_rain_time)) < 180000) ? \"ANO\" : \"NIE\""
+            - "id(bmp390_pressure).state"
+            - "id(htu21d_temperature).state"
+            - "id(htu21d_humidity).state"
+            - "id(bh1750_lux).state"
+            - "id(battery_adc).state"
+            - "id(battery_voltage).state"
+
+  - interval: 10s
+    then:
+      - if:
+          condition:
+            wifi.connected:
+          then:
+            - lambda: |-
+                id(wifi_failed_checks) = 0;
+          else:
+            - lambda: |-
+                id(wifi_failed_checks)++;
+
+                ESP_LOGW(
+                  "wifi_recovery",
+                  "Wi-Fi is disconnected. Check %d/10",
+                  id(wifi_failed_checks)
+                );
+
+            - if:
+                condition:
+                  lambda: |-
+                    return id(wifi_failed_checks) >= 10;
+                then:
+                  - logger.log:
+                      level: WARN
+                      tag: wifi_recovery
+                      format: "10 failed checks. Disabling Wi-Fi for 3 minutes."
+
+                  - lambda: |-
+                      id(wifi_failed_checks) = 0;
+
+                  - wifi.disable:
+
+                  - delay: 3min
+
+                  - logger.log:
+                      level: INFO
+                      tag: wifi_recovery
+                      format: "Pause finished. Enabling Wi-Fi again."
+
+                  - wifi.enable:
+
+ota:
+  - platform: esphome
+
+api:
+  reboot_timeout: 0s
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+  reboot_timeout: 0s
+  power_save_mode: light
+
+  manual_ip:
+    static_ip: 192.168.1.81
+    gateway: 192.168.1.1
+    subnet: 255.255.255.0
+    dns1: 1.1.1.1
+    dns2: 8.8.8.8
+
+  ap:
+    ssid: "WeatherStation-Fallback"
+    password: "MeteoTest8264"
+
+captive_portal:
