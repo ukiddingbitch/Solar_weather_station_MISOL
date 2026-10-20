@@ -53,7 +53,7 @@ The following sections explain selected parts of the configuration and the calib
 1. Battery Voltage Measurement
 
 The battery voltage is measured using the ESP32-C3 ADC and a voltage divider.
-```
+```yaml
   - platform: adc
     pin: GPIO4
     id: battery_adc
@@ -81,7 +81,7 @@ Calibration warning: The multiplier "11.35" depends on the actual voltage divide
 2. Wind Direction
 
 Wind direction is measured using an analog input on GPIO3. The measured voltage is compared with calibrated voltage ranges to determine the compass direction.
-
+```yaml
   - platform: adc
     pin: GPIO3
     id: wind_direction_adc
@@ -93,9 +93,9 @@ Wind direction is measured using an analog input on GPIO3. The measured voltage 
       - sliding_window_moving_average:
           window_size: 5
           send_every: 1
-
+```
 Example voltage reference values:
-
+```yaml
 Direction| Reference voltage
 North| 2.984 V
 North-East| 2.920 V
@@ -105,13 +105,13 @@ South| 0.303 V
 South-West| 0.606 V
 West| 0.935 V
 North-West| 2.050 V
-
+```
 Calibration warning: These values are specific to the sensor and circuit used in this build. Measure the actual output voltages and adjust the thresholds in the full YAML configuration if necessary.
 
 3. Wind Speed
 
 Wind speed is calculated by counting anemometer pulses. The configuration calculates speed in metres per second and kilometres per hour and uses a rolling history of measurements.
-
+```yaml
   - platform: template
     name: "Wind Speed"
     id: wind_speed_kmh
@@ -121,7 +121,7 @@ Wind speed is calculated by counting anemometer pulses. The configuration calcul
     accuracy_decimals: 1
     lambda: |-
       return id(wind_speed_kmh_value);
-
+```
 The conversion used in the configuration is:
 
 wind_speed_kmh = pulses_per_second * 2.4f;
@@ -132,10 +132,10 @@ Calibration warning: The conversion factor "2.4" must match the characteristics 
 4. Rainfall Measurement
 
 Rainfall is measured using a tipping-bucket rain gauge. Each detected pulse increases the accumulated rainfall.
-
+```yaml
 id(rain_count) += 0.2794f;
 id(rain_count_today) += 0.2794f;
-
+```
 The configuration calculates accumulated rainfall, daily rainfall, recent rainfall and precipitation rate.
 
 Calibration warning: The value "0.2794 mm" per pulse must match the rain gauge calibration. The rainfall counters are held in runtime globals in this implementation, so accumulated values may be lost after a restart unless persistence is explicitly configured. Daily reset also depends on a valid time source.
@@ -143,12 +143,12 @@ Calibration warning: The value "0.2794 mm" per pulse must match the rain gauge c
 5. I²C Sensors
 
 The I²C bus connects the BMP390, HTU21D and BH1750 sensors.
-
+```yaml
 i2c:
   sda: GPIO8
   scl: GPIO9
   scan: true
-
+```
 - HTU21D: Temperature and relative humidity
 - BMP390: Atmospheric pressure and temperature
 - BH1750: Ambient illuminance
@@ -160,22 +160,22 @@ Hardware warning: Confirm the I²C addresses, supply voltage and wiring for the 
 6. Illuminance Measurement
 
 The BH1750 measures ambient illuminance in lux.
-
+```yaml
   - platform: bh1750
     name: "Illuminance"
     address: 0x23
     update_interval: 10s
-
+```
 The address shown is a common BH1750 address. Use the address detected by your actual hardware if it differs.
 
 7. Wi-Fi Reliability
 
 The station includes a recovery mechanism intended to restore connectivity after repeated Wi-Fi failures.
-
+```yaml
 wifi:
   power_save_mode: light
   reboot_timeout: 0s
-
+```
 The full YAML also contains an automation that monitors connectivity and temporarily disables and re-enables Wi-Fi after repeated failed checks.
 
 Warning: Disabling the automatic reboot timeout means that Wi-Fi disconnection alone will not trigger the usual ESPHome reboot behavior. Test the recovery automation under real network failure conditions.
@@ -188,7 +188,7 @@ The configuration also includes OTA updates and a fallback access point for reco
 
 Keep API encryption keys, Wi-Fi credentials and OTA passwords private. Store secrets in a separate "secrets.yaml" file when appropriate, and never publish real credentials in a public repository.
 
-9. GPIO Pinout
+### 9. GPIO Pinout
 
 ESP32-C3 GPIO| Function
 GPIO3| Wind direction ADC
@@ -209,7 +209,3 @@ Check the complete YAML and the wiring of your particular board before connectin
 - Solar charging performance depends on panel output, battery capacity, charging electronics and weather conditions.
 - Wi-Fi availability and Home Assistant connectivity depend on the local network.
 - Runtime counters may reset when the device restarts unless persistence is implemented.
-
-License
-
-Specify the license for this project before distributing or reusing its source code. If no license is provided, users should not assume that the project is freely reusable.
