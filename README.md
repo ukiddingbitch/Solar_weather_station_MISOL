@@ -44,4 +44,4 @@ Battery voltage measurement have to be done then change multiplier if this one w
 ```yaml
 return adc * 11.35f;
 ```
-Images/board with esp.jpg
+
