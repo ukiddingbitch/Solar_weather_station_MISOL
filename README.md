@@ -102,6 +102,28 @@ Wind direction is measured using an analog input on GPIO3. The measured voltage 
 | 0.935 | West |
 | 2.050 | Northwest |
 
+<table>
+<tr>
+<th colspan="2">ADC Voltage Calibration</th>
+<th></th>
+<th>Measured Resistances</th>
+</tr>
+<tr>
+<th>Voltage (V)</th>
+<th>Wind Direction</th>
+<th></th>
+<th>Resistance (kΩ)</th>
+</tr>
+<tr><td>2.984</td><td>North</td><td></td><td>3.89</td></tr>
+<tr><td>2.920</td><td>Northeast</td><td></td><td>15.95</td></tr>
+<tr><td>2.559</td><td>East</td><td></td><td>119.8</td></tr>
+<tr><td>1.510</td><td>Southeast</td><td></td><td>64.6</td></tr>
+<tr><td>0.303</td><td>South</td><td></td><td>32.94</td></tr>
+<tr><td>0.606</td><td>Southwest</td><td></td><td>8.21</td></tr>
+<tr><td>0.935</td><td>West</td><td></td><td>0.99</td></tr>
+<tr><td>2.050</td><td>Northwest</td><td></td><td>2.193</td></tr>
+</table>
+
 **Calibration warning:** These values are specific to the sensor and circuit used in this build. Measure the actual output voltages and adjust the thresholds in the full YAML configuration if necessary.
 
 ### 3. Wind Speed
