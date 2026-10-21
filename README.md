@@ -209,8 +209,7 @@ Check the complete YAML and the wiring of your particular board before connectin
 
 ### 9. Assembling
 
-https://github.com/ukiddingbitch/Solar_weather_station_MISOL/blob/main/Images/board.jpg
-
+![Weather station circuit board](https://raw.githubusercontent.com/ukiddingbitch/Solar_weather_station_MISOL/main/Images/board.jpg)
 ### . Limitations and Notes
 
 - Sensor accuracy depends on calibration, component tolerances and installation.
