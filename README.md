@@ -95,7 +95,7 @@ Wind direction is measured using an analog input on GPIO3. The measured voltage 
           window_size: 5
           send_every: 1
 ```
-**Example voltage reference values:*
+*Example voltage reference values:*
 
 | Voltage (V) | Wind Direction |
 |---:|---|
@@ -107,7 +107,6 @@ Wind direction is measured using an analog input on GPIO3. The measured voltage 
 | 0.606 | Southwest |
 | 0.935 | West |
 | 2.050 | Northwest |
-| — | Unknown |
 
 **Calibration warning:** These values are specific to the sensor and circuit used in this build. Measure the actual output voltages and adjust the thresholds in the full YAML configuration if necessary.
 
