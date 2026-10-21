@@ -32,7 +32,7 @@ Based on an ESP32-C3, ESPHome and Home Assistant. The station measures temperatu
 | Wind speed sensor | Anemometer |
 | Wind direction sensor | Analog wind direction sensor |
 | Rain gauge | Tipping-bucket rain gauge |
-| Solar panel | Solar power supply |
+| Solar panel (6V/5W)| Solar power supply |
 | Battery | 2x parallel Li-ion 18650 |
 | Charging module | CN3158 |
 | Voltage converter | MT3608 |
@@ -182,7 +182,7 @@ The station uses the native ESPHome API to expose its sensor readings to Home As
 
 The configuration also includes OTA updates and a fallback access point for recovery when the configured Wi-Fi network is unavailable.
 
-Keep API encryption keys, Wi-Fi credentials and OTA passwords private. Store secrets in a separate "secrets.yaml" file when appropriate, and never publish real credentials in a public repository.
+Keep API encryption keys, Wi-Fi credentials and OTA passwords private. Never publish real credentials in a public repository.
 
 ## GPIO Pinout
 
