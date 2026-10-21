@@ -71,7 +71,7 @@ The battery voltage is measured using the ESP32-C3 ADC and a voltage divider.
     lambda: |-
       return id(battery_adc).state * 11.35f;
 ```
-**Calibration warning!:** The multiplier "11.35" depends on the actual voltage divider and ADC readings. Calibrate it by comparing the reported voltage with a multimeter connected to the battery. Ensure that the voltage at the ADC input never exceeds the permitted input range.
+**Calibration warning!:** Battery voltage is measured via a **100 kΩ / 33 kΩ** voltage divider with a **100 nF** ceramic capacitor on **GPIO4 (ADC)**. The theoretical multiplier is 4.03. Calibrate against a multimeter and ensure the ADC input voltage stays within the ESP32-C3's permitted range.
 
 ### 2. Wind Direction
 
