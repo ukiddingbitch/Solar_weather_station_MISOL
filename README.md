@@ -207,7 +207,10 @@ Keep API encryption keys, Wi-Fi credentials and OTA passwords private. Never pub
 
 Check the complete YAML and the wiring of your particular board before connecting hardware. Avoid assigning the same GPIO to incompatible functions.
 
-### 10. Limitations and Notes
+### 9. Assembling
+
+
+### . Limitations and Notes
 
 - Sensor accuracy depends on calibration, component tolerances and installation.
   
