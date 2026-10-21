@@ -91,23 +91,11 @@ Wind direction is measured using an analog input on GPIO3. The measured voltage 
 ```
 *Example voltage reference values:*
 
-| Voltage (V) | Wind Direction |
-|---:|---|
-| 2.984 | North |
-| 2.920 | Northeast |
-| 2.559 | East |
-| 1.510 | Southeast |
-| 0.303 | South |
-| 0.606 | Southwest |
-| 0.935 | West |
-| 2.050 | Northwest |
-
 <table>
 <tr>
 <th colspan="2">ADC Voltage Calibration</th>
 <th></th>
-<th>Measured Resistances</th>
-</tr>
+<th>Measured Resistance (kΩ)<br><sub>Independent of voltage values; listed in measurement order.</sub></th></tr>
 <tr>
 <th>Voltage (V)</th>
 <th>Wind Direction</th>
