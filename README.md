@@ -210,6 +210,12 @@ Check the complete YAML and the wiring of your particular board before connectin
 ### 9. Assembling
 
 ![Weather station circuit board](https://raw.githubusercontent.com/ukiddingbitch/Solar_weather_station_MISOL/main/Images/board.jpg)
+
+![Circuit board](https://raw.githubusercontent.com/ukiddingbitch/Solar_weather_station_MISOL/main/Images/board_1.jpg)
+
+![Circuit board with ESP32-C3](https://raw.githubusercontent.com/ukiddingbitch/Solar_weather_station_MISOL/main/Images/board%20with%20esp_1.jpg)
+
+![Circuit board with ESP32-C3 assembled](https://raw.githubusercontent.com/ukiddingbitch/Solar_weather_station_MISOL/main/Images/board%20with%20esp.jpg)
 ### . Limitations and Notes
 
 - Sensor accuracy depends on calibration, component tolerances and installation.
