@@ -231,3 +231,7 @@ Check the complete YAML and the wiring of your particular board before connectin
 - Wi-Fi availability and Home Assistant connectivity depend on the local network.
   
 - Runtime counters may reset when the device restarts unless persistence is implemented.
+
+### ⚠️ ESP32-C3 MINI Board Comparison — IMPORTANT: READ BEFORE BUYING
+
+![ESP32-C3 MINI comparison: antenna placement and Wi-Fi connectivity](Images/esp32c3mini_comparision.png)
